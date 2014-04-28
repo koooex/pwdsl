@@ -1,7 +1,9 @@
-#include <stdio.h>
+#include <Python.h>
 
-int main(int argc, char const *argv[])
+int main()
 {
-    printf("main \n");
+    Py_Initialize();
+    PyRun_SimpleString("execfile('bize.py')");
+    Py_Finalize();
     return 0;
-}
+}      

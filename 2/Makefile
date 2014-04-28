@@ -1,5 +1,7 @@
 CC = gcc
-CFLAGS = -g -Wall
+LIB = -lpython2.7
+INC = -I/usr/include/python2.7/
+CFLAGS = -g -Wall -pthread
 
 SRC := ${shell ls *.c}
 OBJ := $(patsubst %.c,%.o,${SRC})
@@ -7,19 +9,20 @@ OBJ := $(patsubst %.c,%.o,${SRC})
 $(warning ${SRC})
 $(warning ${OBJ})
 
-TARGET = engine base.so
+TARGET = engine
+SHARES = base.so
 
 .PHONY: all
-all: ${TARGET} 
+all: ${TARGET} ${SHARES}
 
-engine: engine.c
-	${CC} ${CFLAGS} -o $@ $<
+$(filter %, ${TARGET}): %: %.c
+	${CC} ${CFLAGS} ${INC} ${LIB} -o $@ $<
 
-$(filter %.so, ${TARGET}): %.so: %.c
+$(filter %.so, ${SHARES}): %.so: %.c
 	${CC} ${CFLAGS} -shared -o $@ $<
 
 .PHONY: clean
 clean:
-	@-rm -rf *.dSYM *.so engine
+	@-rm -rf *.dSYM *.so ${TARGET}
 
 
