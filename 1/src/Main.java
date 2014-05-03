@@ -14,35 +14,35 @@ public class Main {
         Event doorOpened = new Event("doorOpened", "D1OP");
         Event panelClosed = new Event("panelClosed", "PNCL");
 
-        Command unlockPanel = new Command("unlockPanel", "PNUL");
-        Command lockPanel = new Command("lockPanel", "PNLK");
-        Command lockDoor = new Command("lockDoor", "D1LK");
-        Command unlockDoor = new Command("unlockDoor", "D1UL");
+        Command unlockPanelCommand = new Command("unlockPanel", "PNUL");
+        Command lockPanelCommand = new Command("lockPanel", "PNLK");
+        Command lockDoorCommand = new Command("lockDoor", "D1LK");
+        Command unlockDoorCommand = new Command("unlockDoor", "D1UL");
 
-        State idle = new State("idle");
-        State active = new State("active");
-        State waitingForLight = new State("WaitingForLight");
-        State waitingForDrawer = new State("WaitingForDrawer");
-        State unlockedPanel = new State("unlockedPanel");
+        State idleState = new State("idle");
+        State activeState = new State("active");
+        State waitingForLightState = new State("WaitingForLight");
+        State waitingForDrawerState = new State("WaitingForDrawer");
+        State unlockedPanelState = new State("unlockedPanel");
 
-        StateMachine machine = new StateMachine(idle, new CosoleChannel());
 
-        idle.addTransition(doorClosed, active);
-        idle.addAction(unlockDoor);
-        idle.addAction(lockPanel);
+        idleState.addTransition(doorClosed, activeState);
+        idleState.addAction(unlockDoorCommand);
+        idleState.addAction(lockPanelCommand);
 
-        active.addTransition(drawerOpened, waitingForLight);
-        active.addTransition(lightOn, waitingForDrawer);
+        waitingForLightState.addTransition(drawerOpened, unlockedPanelState);
 
-        waitingForLight.addTransition(drawerOpened, unlockedPanel);
+        activeState.addTransition(drawerOpened, waitingForLightState);
+        activeState.addTransition(lightOn, waitingForDrawerState);
 
-        waitingForDrawer.addTransition(lightOn, unlockedPanel);
+        waitingForDrawerState.addTransition(lightOn, unlockedPanelState);
 
-        unlockedPanel.addAction(unlockPanel);
-        unlockedPanel.addAction(lockDoor);
-        unlockedPanel.addTransition(panelClosed, idle);
+        unlockedPanelState.addAction(unlockPanelCommand);
+        unlockedPanelState.addAction(lockDoorCommand);
+        unlockedPanelState.addTransition(panelClosed, idleState);
 
-        machine.addResetEvent(doorOpened);
+        StateMachine machine = new StateMachine(idleState, new CosoleChannel());
+        machine.addResetEvents(doorOpened);
 
         machine.process("abcd");
     }

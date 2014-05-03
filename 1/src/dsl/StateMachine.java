@@ -29,8 +29,10 @@ public class StateMachine {
             collectStates(result, next);
     }
 
-    public void addResetEvent(Event event) {
-        this.resetEvents.add(event);
+    public void addResetEvents(Event... events) {
+        for(Event e : events) {
+            this.resetEvents.add(e);
+        }
     }
 
     private List<String> resetEventCodes() {
